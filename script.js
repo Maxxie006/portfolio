@@ -117,8 +117,7 @@ class LanyardIntegration {
         const indicator = document.getElementById('discord-indicator');
         if (indicator) {
             indicator.className = 'discord-status-indicator';
-            // Force DND status for demo
-            indicator.classList.add('status-dnd');
+            indicator.classList.add(`status-${data.discord_status}`);
         }
 
         // Update profile picture if avatar is available
@@ -130,34 +129,67 @@ class LanyardIntegration {
             profilePicture.style.backgroundPosition = 'center';
         }
 
-        // Create status display
+        // Create enhanced status display
         const statusContainer = createElement('div', 'discord-user');
         
-        // Status text
+        // User info section
+        const userInfo = createElement('div', 'discord-user-info');
+        
+        // Username and discriminator
+        const username = createElement('h3', 'discord-username');
+        username.textContent = data.discord_user.username;
+        if (data.discord_user.discriminator && data.discord_user.discriminator !== '0') {
+            username.textContent += `#${data.discord_user.discriminator}`;
+        }
+        userInfo.appendChild(username);
+
+        // Status with color
         const statusText = createElement('p', 'discord-status-text');
         const statusLabel = this.getStatusText(data.discord_status);
-        
-        // Create status with colored text only for the status word
-        if (data.discord_status === 'online') {
-            const statusSpan = createElement('span', 'status-online-text');
-            statusSpan.textContent = statusLabel.toUpperCase();
-            statusText.appendChild(statusSpan);
-        } else {
-            statusText.textContent = statusLabel.toUpperCase();
+        statusText.innerHTML = `<span class="status-${data.discord_status}">${statusLabel.toUpperCase()}</span>`;
+        userInfo.appendChild(statusText);
+
+        // Custom status (if available)
+        if (data.activities) {
+            const customStatus = data.activities.find(activity => activity.type === 4);
+            if (customStatus && customStatus.state) {
+                const customStatusText = createElement('p', 'discord-custom-status');
+                customStatusText.textContent = `"${customStatus.state}"`;
+                userInfo.appendChild(customStatusText);
+            }
         }
-        
-        // Use actual Discord status
 
-        statusContainer.appendChild(statusText);
+        statusContainer.appendChild(userInfo);
 
-        // Activities (including Spotify)
+        // Activities section
         if (data.activities && data.activities.length > 0) {
+            const activitiesSection = createElement('div', 'discord-activities');
+            const activitiesTitle = createElement('h4', 'activities-title');
+            activitiesTitle.textContent = 'Currently';
+            activitiesSection.appendChild(activitiesTitle);
+
             data.activities.forEach(activity => {
                 if (activity.type !== 4) { // Skip custom status
-                    const activityElement = this.createActivityElement(activity);
-                    statusContainer.appendChild(activityElement);
+                    const activityElement = this.createEnhancedActivityElement(activity);
+                    activitiesSection.appendChild(activityElement);
                 }
             });
+
+            statusContainer.appendChild(activitiesSection);
+        }
+
+        // Server info (if available)
+        if (data.guilds && data.guilds.length > 0) {
+            const serverInfo = createElement('div', 'discord-server-info');
+            const serverTitle = createElement('h4', 'server-title');
+            serverTitle.textContent = 'Servers';
+            serverInfo.appendChild(serverTitle);
+            
+            const serverCount = createElement('p', 'server-count');
+            serverCount.textContent = `${data.guilds.length} servers`;
+            serverInfo.appendChild(serverCount);
+            
+            statusContainer.appendChild(serverInfo);
         }
 
         this.container.innerHTML = '';
@@ -180,6 +212,65 @@ class LanyardIntegration {
         }
 
         return activityDiv;
+    }
+
+    createEnhancedActivityElement(activity) {
+        const activityDiv = createElement('div', 'enhanced-activity');
+        
+        // Activity icon (if available)
+        if (activity.assets && activity.assets.large_image) {
+            const icon = createElement('div', 'activity-icon');
+            const iconUrl = `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
+            icon.style.backgroundImage = `url(${iconUrl})`;
+            activityDiv.appendChild(icon);
+        }
+
+        // Activity content
+        const content = createElement('div', 'activity-content');
+        
+        // Activity name
+        const activityName = createElement('h5', 'activity-name', activity.name);
+        content.appendChild(activityName);
+
+        // Activity type
+        const activityType = createElement('p', 'activity-type', this.getActivityType(activity.type));
+        content.appendChild(activityType);
+
+        // Details and state
+        if (activity.details) {
+            const details = createElement('p', 'activity-details', activity.details);
+            content.appendChild(details);
+        }
+
+        if (activity.state) {
+            const state = createElement('p', 'activity-state', activity.state);
+            content.appendChild(state);
+        }
+
+        // Timestamps
+        if (activity.timestamps) {
+            const timeInfo = createElement('p', 'activity-time');
+            if (activity.timestamps.start) {
+                const startTime = new Date(activity.timestamps.start);
+                timeInfo.textContent = `Started: ${startTime.toLocaleTimeString()}`;
+            }
+            content.appendChild(timeInfo);
+        }
+
+        activityDiv.appendChild(content);
+        return activityDiv;
+    }
+
+    getActivityType(type) {
+        const types = {
+            0: 'Playing',
+            1: 'Streaming',
+            2: 'Listening to',
+            3: 'Watching',
+            4: 'Custom Status',
+            5: 'Competing in'
+        };
+        return types[type] || 'Unknown';
     }
 
     getStatusText(status) {
@@ -375,112 +466,238 @@ const style = document.createElement('style');
 style.textContent = glitchCSS;
 document.head.appendChild(style);
 
-// Simple Portfolio Features
-class SimplePortfolio {
+// Enhanced Portfolio Features
+class EnhancedPortfolio {
     constructor() {
         this.init();
     }
 
     init() {
-        this.createSimpleParticles();
-        this.addSimpleInteractions();
+        this.createEnhancedParticles();
+        this.addEnhancedInteractions();
+        this.addKeyboardShortcuts();
+        this.addScrollEffects();
     }
 
-    createSimpleParticles() {
+    createEnhancedParticles() {
         const particlesContainer = document.querySelector('.floating-particles');
+        const darkParticlesContainer = document.querySelector('.dark-particles');
         
-        for (let i = 0; i < 8; i++) {
+        // Create fewer light particles for better performance
+        for (let i = 0; i < 6; i++) {
             const particle = document.createElement('div');
+            particle.className = 'particle';
             particle.style.position = 'absolute';
             particle.style.width = Math.random() * 3 + 1 + 'px';
             particle.style.height = particle.style.width;
-            particle.style.background = `rgba(74, 158, 255, ${Math.random() * 0.4 + 0.1})`;
+            particle.style.background = `rgba(100, 150, 255, ${Math.random() * 0.2 + 0.1})`;
             particle.style.borderRadius = '50%';
             particle.style.left = Math.random() * 100 + '%';
             particle.style.top = Math.random() * 100 + '%';
-            particle.style.animation = `floatParticle ${Math.random() * 15 + 15}s linear infinite`;
-            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animation = `floatUp ${Math.random() * 20 + 20}s linear infinite`;
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.willChange = 'transform, opacity';
             
             particlesContainer.appendChild(particle);
         }
 
-        // Add CSS for floating particles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes floatParticle {
-                0% {
-                    transform: translateY(100vh);
-                    opacity: 0;
-                }
-                10% {
-                    opacity: 1;
-                }
-                90% {
-                    opacity: 1;
-                }
-                100% {
-                    transform: translateY(-100px);
-                    opacity: 0;
-                }
+        // Create fewer dark particles for better performance
+        for (let i = 0; i < 4; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'dark-particle';
+            particle.style.position = 'absolute';
+            particle.style.width = Math.random() * 4 + 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.background = `rgba(0, 0, 0, ${Math.random() * 0.3 + 0.1})`;
+            particle.style.borderRadius = '50%';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animation = `darkFloat ${Math.random() * 25 + 25}s linear infinite`;
+            particle.style.animationDelay = Math.random() * 25 + 's';
+            particle.style.willChange = 'transform, opacity';
+            
+            darkParticlesContainer.appendChild(particle);
+        }
+
+        // Reduced spooky orb frequency for better performance
+        setInterval(() => {
+            if (Math.random() < 0.1) { // Reduced from 0.3 to 0.1
+                const orb = document.createElement('div');
+                orb.className = 'spooky-orb';
+                orb.style.position = 'absolute';
+                orb.style.width = Math.random() * 30 + 15 + 'px';
+                orb.style.height = orb.style.width;
+                orb.style.left = Math.random() * 100 + '%';
+                orb.style.top = Math.random() * 100 + '%';
+                orb.style.animation = `spookyDrift ${Math.random() * 30 + 30}s ease-in-out infinite`;
+                orb.style.willChange = 'transform, opacity';
+                
+                darkParticlesContainer.appendChild(orb);
+                
+                setTimeout(() => {
+                    if (orb.parentNode) {
+                        orb.parentNode.removeChild(orb);
+                    }
+                }, 40000); // Increased duration
             }
-        `;
-        document.head.appendChild(style);
+        }, 15000); // Increased interval
     }
 
-    addSimpleInteractions() {
-        // Simple hover effects for skills
-        const skills = document.querySelectorAll('.skill');
-        skills.forEach(skill => {
-            skill.addEventListener('mouseenter', () => {
-                skill.style.transform = 'translateY(-2px) scale(1.05)';
-            });
-            skill.addEventListener('mouseleave', () => {
-                skill.style.transform = '';
-            });
-        });
-
-        // Simple hover effects for tags
+    addEnhancedInteractions() {
+        // Enhanced hover effects for tags
         const tags = document.querySelectorAll('.tag');
         tags.forEach(tag => {
             tag.addEventListener('mouseenter', () => {
-                tag.style.transform = 'translateY(-2px) scale(1.05)';
+                tag.style.transform = 'translateY(-3px) scale(1.05)';
+                tag.style.boxShadow = '0 8px 25px rgba(100, 150, 255, 0.2)';
+                tag.style.borderColor = 'rgba(100, 150, 255, 0.5)';
             });
             tag.addEventListener('mouseleave', () => {
                 tag.style.transform = '';
+                tag.style.boxShadow = '';
+                tag.style.borderColor = '';
             });
+        });
+
+        // Enhanced profile picture interaction
+        const profilePicture = document.querySelector('.profile-picture');
+        if (profilePicture) {
+            profilePicture.addEventListener('mouseenter', () => {
+                profilePicture.style.transform = 'scale(1.1) rotate(2deg)';
+                profilePicture.style.boxShadow = '0 0 30px rgba(100, 150, 255, 0.4)';
+            });
+            profilePicture.addEventListener('mouseleave', () => {
+                profilePicture.style.transform = 'scale(1) rotate(0deg)';
+                profilePicture.style.boxShadow = '';
+            });
+        }
+
+        // Add click ripple effect
+        document.addEventListener('click', (e) => {
+            this.createRipple(e.clientX, e.clientY);
+        });
+    }
+
+    createRipple(x, y) {
+        const ripple = document.createElement('div');
+        ripple.style.position = 'fixed';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.style.width = '0px';
+        ripple.style.height = '0px';
+        ripple.style.borderRadius = '50%';
+        ripple.style.background = 'rgba(100, 150, 255, 0.3)';
+        ripple.style.pointerEvents = 'none';
+        ripple.style.zIndex = '9999';
+        ripple.style.transform = 'translate(-50%, -50%)';
+        
+        document.body.appendChild(ripple);
+        
+        const animation = ripple.animate([
+            { width: '0px', height: '0px', opacity: 1 },
+            { width: '100px', height: '100px', opacity: 0 }
+        ], {
+            duration: 600,
+            easing: 'ease-out'
+        });
+        
+        animation.onfinish = () => {
+            ripple.remove();
+        };
+    }
+
+    addKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Space bar to change quote
+            if (e.code === 'Space' && e.target === document.body) {
+                e.preventDefault();
+                const quoteSystem = window.lifeQuotes;
+                if (quoteSystem) {
+                    quoteSystem.nextQuote();
+                }
+            }
+            
+            // Escape to reset animations
+            if (e.code === 'Escape') {
+                document.querySelectorAll('*').forEach(el => {
+                    el.style.animationPlayState = 'paused';
+                });
+                setTimeout(() => {
+                    document.querySelectorAll('*').forEach(el => {
+                        el.style.animationPlayState = 'running';
+                    });
+                }, 1000);
+            }
+        });
+    }
+
+    addScrollEffects() {
+        // Optimized scroll effects with throttling
+        let mouseY = 0;
+        let animationFrame = null;
+        
+        const updateParticles = () => {
+            const particles = document.querySelectorAll('.particle, .dark-particle');
+            particles.forEach((particle, index) => {
+                const speed = (index % 3 + 1) * 0.3; // Reduced speed for better performance
+                particle.style.transform = `translateY(${mouseY * speed}px)`;
+            });
+            animationFrame = null;
+        };
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseY = e.clientY / window.innerHeight;
+            
+            // Throttle updates using requestAnimationFrame
+            if (!animationFrame) {
+                animationFrame = requestAnimationFrame(updateParticles);
+            }
         });
     }
 }
 
 // Initialize everything when DOM is loaded
-// Custom Cursor Handler
+// Enhanced Custom Cursor Handler
 class CustomCursor {
     constructor() {
         this.cursor = document.querySelector('.custom-cursor');
         this.cursorGlow = document.querySelector('.cursor-glow');
+        this.isHovering = false;
         this.init();
     }
 
     init() {
         if (!this.cursor || !this.cursorGlow) return;
 
+        let mouseX = 0, mouseY = 0;
+        let animationFrame = null;
+
+        const updateCursor = () => {
+            this.cursor.style.left = mouseX - 4 + 'px';
+            this.cursor.style.top = mouseY - 4 + 'px';
+            
+            this.cursorGlow.style.left = mouseX - 12 + 'px';
+            this.cursorGlow.style.top = mouseY - 12 + 'px';
+            animationFrame = null;
+        };
+
         document.addEventListener('mousemove', (e) => {
-            const x = e.clientX;
-            const y = e.clientY;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
             
-            this.cursor.style.left = x - 10 + 'px';
-            this.cursor.style.top = y - 10 + 'px';
-            
-            this.cursorGlow.style.left = x - 20 + 'px';
-            this.cursorGlow.style.top = y - 20 + 'px';
+            if (!animationFrame) {
+                animationFrame = requestAnimationFrame(updateCursor);
+            }
         });
 
-        // Add click effect
+        // Enhanced click effect
         document.addEventListener('click', (e) => {
-            this.cursor.style.transform = 'scale(1.5)';
+            this.cursor.style.transform = 'scale(1.8)';
+            this.cursorGlow.style.transform = 'scale(1.5)';
             setTimeout(() => {
                 this.cursor.style.transform = 'scale(1)';
-            }, 150);
+                this.cursorGlow.style.transform = 'scale(1)';
+            }, 200);
         });
 
         // Hide cursor when leaving window
@@ -493,6 +710,27 @@ class CustomCursor {
             this.cursor.style.opacity = '1';
             this.cursorGlow.style.opacity = '1';
         });
+
+        // Enhanced hover effects
+        this.addHoverEffects();
+    }
+
+    addHoverEffects() {
+        const hoverElements = document.querySelectorAll('a, .tag, .profile-picture');
+        
+        hoverElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                this.cursor.style.transform = 'scale(1.5)';
+                this.cursorGlow.style.transform = 'scale(1.3)';
+                this.cursor.style.background = 'rgba(100, 150, 255, 0.6)';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                this.cursor.style.transform = 'scale(1)';
+                this.cursorGlow.style.transform = 'scale(1)';
+                this.cursor.style.background = 'rgba(255, 255, 255, 0.4)';
+            });
+        });
     }
 }
 
@@ -500,36 +738,36 @@ class CustomCursor {
 class LifeQuoteSystem {
     constructor() {
         this.quotes = [
-            "existence is just suffering with brief intermissions...",
-            "we're all just pretending everything is fine...",
-            "another day, another disappointment...",
-            "the void stares back and it's bored...",
-            "happiness is temporary, emptiness is forever...",
-            "we're all dying slowly, some just faster...",
-            "nothing really matters in the end...",
-            "life is just waiting for something that never comes...",
-            "we're all broken in different ways...",
-            "the universe is indifferent to our pain...",
-            "hope is just delayed disappointment...",
-            "we're all alone in our own heads...",
-            "time heals nothing, it just makes you numb...",
-            "dreams die harder than people...",
-            "we're all just ghosts haunting our own lives...",
-            "the best days are behind us...",
-            "we're all just noise in the silence...",
-            "meaning is something we invented to cope...",
-            "we're all just waiting for the credits to roll...",
-            "reality is overrated and underwhelming...",
-            "every smile is just hiding the emptiness inside...",
-            "we're all just actors in a play nobody wants to watch...",
-            "the darkness always wins in the end...",
-            "love is just a chemical reaction that fades...",
-            "we're all just counting down to nothing...",
-            "hope is the cruelest joke of all...",
-            "we're drowning in our own thoughts...",
-            "the silence is louder than any scream...",
-            "we're all just broken toys pretending to work...",
-            "tomorrow will be just as empty as today..."
+            "i want to disappear into the void forever...",
+            "every breath feels like a mistake...",
+            "the pain never stops, it just changes form...",
+            "i'm already dead inside, just waiting for my body to catch up...",
+            "existence is a curse i never asked for...",
+            "i dream of the sweet release of nothingness...",
+            "every day i wake up disappointed i'm still here...",
+            "the world would be better without me in it...",
+            "i'm just a burden on everyone around me...",
+            "death seems like the only logical solution...",
+            "i'm trapped in this nightmare called life...",
+            "the darkness is calling and i want to answer...",
+            "i'm already a ghost, just waiting to fade away...",
+            "every moment is torture, every second is hell...",
+            "i wish i was never born...",
+            "the pain is so deep it's become my only friend...",
+            "i'm drowning in my own despair...",
+            "the end can't come soon enough...",
+            "i'm just a walking corpse with a heartbeat...",
+            "the void is the only thing that makes sense...",
+            "i'm tired of pretending to be human...",
+            "every day is a battle i'm losing...",
+            "the silence of death sounds peaceful...",
+            "i'm already gone, just my body remains...",
+            "the world is too cruel for someone like me...",
+            "i want to erase myself from existence...",
+            "the pain is the only thing that feels real...",
+            "i'm just a mistake that should be corrected...",
+            "death is the only freedom left...",
+            "i'm already dead, just waiting for the funeral..."
         ];
         this.currentQuoteIndex = this.getRandomIndex();
         this.timeLeft = 20;
@@ -544,8 +782,49 @@ class LifeQuoteSystem {
 
     displayCurrentQuote() {
         if (this.quoteElement) {
-            this.quoteElement.textContent = this.quotes[this.currentQuoteIndex];
+            this.typeQuote(this.quotes[this.currentQuoteIndex]);
         }
+    }
+
+    typeQuote(quote) {
+        if (!this.quoteElement) return;
+        
+        // Clear the element
+        this.quoteElement.textContent = '';
+        this.quoteElement.style.width = '0';
+        
+        // Start typing animation
+        let i = 0;
+        const typeInterval = setInterval(() => {
+            if (i < quote.length) {
+                this.quoteElement.textContent += quote.charAt(i);
+                i++;
+            } else {
+                clearInterval(typeInterval);
+                // Remove the typing cursor after completion
+                setTimeout(() => {
+                    this.quoteElement.style.borderRight = 'none';
+                }, 1000);
+            }
+        }, 200); // Much slower, more depressing typing speed (200ms per character)
+    }
+
+    backspaceQuote() {
+        if (!this.quoteElement) return;
+        
+        const currentText = this.quoteElement.textContent;
+        let i = currentText.length;
+        
+        const backspaceInterval = setInterval(() => {
+            if (i > 0) {
+                this.quoteElement.textContent = currentText.substring(0, i - 1);
+                i--;
+            } else {
+                clearInterval(backspaceInterval);
+                // After backspacing is complete, type the new quote
+                this.typeQuote(this.quotes[this.currentQuoteIndex]);
+            }
+        }, 120); // Slower backspace speed (120ms per character)
     }
 
     getRandomIndex() {
@@ -560,7 +839,14 @@ class LifeQuoteSystem {
         } while (newIndex === this.currentQuoteIndex && this.quotes.length > 1);
         
         this.currentQuoteIndex = newIndex;
-        this.displayCurrentQuote();
+        
+        // Reset the typing cursor for the new quote
+        if (this.quoteElement) {
+            this.quoteElement.style.borderRight = '2px solid var(--text-muted)';
+        }
+        
+        // Start backspace animation, then type new quote
+        this.backspaceQuote();
         this.timeLeft = 20;
     }
 
@@ -590,17 +876,17 @@ class LifeQuoteSystem {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('✨ Initializing Simple Maxxie Portfolio...');
+    console.log('✨ Initializing Enhanced Maxxie Portfolio...');
     
     // Initialize Lanyard integration
     const lanyard = new LanyardIntegration(CONFIG.DISCORD_USER_ID);
     lanyard.init();
     
-    // Initialize simple pixel effects
+    // Initialize enhanced pixel effects
     const effects = new PixelEffects();
     
-    // Initialize simple portfolio features
-    const simplePortfolio = new SimplePortfolio();
+    // Initialize enhanced portfolio features
+    const enhancedPortfolio = new EnhancedPortfolio();
 
     // Initialize custom cursor
     const cursor = new CustomCursor();
@@ -609,5 +895,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const lifeQuotes = new LifeQuoteSystem();
     lifeQuotes.init();
     
-    console.log('🎯 Simple Portfolio loaded successfully!');
+    // Make quote system globally accessible for keyboard shortcuts
+    window.lifeQuotes = lifeQuotes;
+    
+    console.log('🎯 Enhanced Portfolio loaded successfully!');
+    console.log('💡 Try pressing SPACE to change quotes or ESC to pause animations');
 });
