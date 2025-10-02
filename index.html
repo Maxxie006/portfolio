@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxxie - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Ambient Sound -->
+    <audio id="ambient-sound" loop preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+        <!-- Fallback to a dark ambient sound URL or local file -->
+    </audio>
+    
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-glow"></div>
+    
+    <!-- Spooky Background Effects -->
+    <div class="spooky-background"></div>
+    <div class="floating-particles" id="floating-particles"></div>
+    <div class="dark-particles" id="dark-particles"></div>
+    
+    <div class="container">
+        <!-- Main Profile Section -->
+        <main class="profile-main">
+            <!-- Profile Picture with Glow -->
+            <div class="profile-picture-container">
+                <div class="profile-picture" id="profile-picture">
+                    <div class="discord-status-indicator" id="discord-indicator"></div>
+                </div>
+                <div class="profile-ring"></div>
+            </div>
+            
+            <!-- Profile Info -->
+            <div class="profile-info">
+                <h1 class="name">
+                    <a href="https://github.com/Maxxie006" target="_blank" class="name-link">Maxxie</a>
+                </h1>
+                
+                <!-- Tags -->
+                <div class="tags">
+                    <span class="tag pronouns">He/Him</span>
+                    <span class="tag sexuality">Bisexual</span>
+                    <span class="tag role">Developer</span>
+                </div>
+                
+                <!-- Life Quote -->
+                <div class="life-quote" id="life-quote">
+                    <span class="quote-text" id="quote-text">Loading thoughts...</span>
+                </div>
+                
+                
+                <!-- Hidden Discord Status for API -->
+                <div class="discord-status status-dnd" id="discord-status" style="display: none;">
+                    <div class="loading">Loading Discord status...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

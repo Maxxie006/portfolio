@@ -1,0 +1,806 @@
+/* Modern Dark Portfolio - Clean & Cohesive */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Nostalgic Ultra Black Theme */
+    --bg-primary: #010101;
+    --bg-secondary: #020202;
+    --bg-tertiary: #030303;
+    --bg-card: rgba(5, 5, 5, 0.99);
+    --bg-overlay: rgba(0, 0, 0, 0.98);
+    
+    /* Nostalgic Text Colors */
+    --text-primary: rgba(220, 220, 200, 0.9);
+    --text-secondary: rgba(180, 180, 160, 0.6);
+    --text-muted: rgba(140, 140, 120, 0.4);
+    --text-accent: rgba(200, 200, 180, 0.8);
+    --text-glow: rgba(255, 255, 240, 0.3);
+    
+    /* Nostalgic CRT Colors */
+    --crt-green: rgba(0, 255, 0, 0.8);
+    --crt-amber: rgba(255, 191, 0, 0.8);
+    --crt-white: rgba(255, 255, 240, 0.9);
+    
+    /* Accent Colors - Very Dark */
+    --accent-red: rgba(80, 20, 20, 0.7);
+    --accent-blue: rgba(20, 30, 60, 0.6);
+    --accent-green: rgba(20, 40, 30, 0.6);
+    --accent-purple: rgba(40, 20, 50, 0.6);
+    
+    /* Status Colors - Barely Visible */
+    --status-online: rgba(30, 50, 30, 0.6);
+    --status-idle: rgba(50, 40, 20, 0.6);
+    --status-offline: rgba(25, 25, 25, 0.6);
+    
+    /* Effects - Minimal */
+    --glow-soft: rgba(255, 255, 255, 0.03);
+    --glow-medium: rgba(255, 255, 255, 0.05);
+    --glow-strong: rgba(255, 255, 255, 0.08);
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.8);
+    --shadow-medium: 0 16px 40px rgba(0, 0, 0, 0.9);
+    --shadow-strong: 0 24px 60px rgba(0, 0, 0, 0.95);
+    
+    /* Borders - Almost Invisible */
+    --border-subtle: rgba(255, 255, 255, 0.03);
+    --border-medium: rgba(255, 255, 255, 0.05);
+    --border-strong: rgba(255, 255, 255, 0.08);
+    
+    /* Typography */
+    --font-primary: 'Orbitron', sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+    
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-xxl: 48px;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 50%;
+}
+
+/* Base Styles */
+body {
+    font-family: var(--font-primary);
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            rgba(0, 0, 0, 0.1) 1px,
+            transparent 2px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            rgba(0, 0, 0, 0.1) 1px,
+            transparent 2px
+        ),
+        radial-gradient(circle at 20% 80%, rgba(0, 20, 0, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(20, 0, 0, 0.1) 0%, transparent 40%),
+        linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    overflow: hidden;
+    cursor: none;
+    position: relative;
+    animation: bodyBreathing 8s ease-in-out infinite;
+}
+
+/* Remove scrollbars */
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+    display: none;
+}
+
+body,
+html {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* CRT Scan Lines */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            rgba(0, 0, 0, 0.3) 1px,
+            transparent 2px,
+            rgba(0, 0, 0, 0.1) 3px,
+            transparent 4px
+        );
+    pointer-events: none;
+    z-index: 1;
+    animation: crtScanlines 0.1s linear infinite, voidPulse 15s ease-in-out infinite;
+}
+
+/* Film Grain & Vignette */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.8) 100%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><filter id="noise"><feTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"/></filter></defs><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.02"/></svg>');
+    pointer-events: none;
+    z-index: 2;
+    animation: filmGrain 0.2s steps(8) infinite, vignetteBreathing 12s ease-in-out infinite;
+}
+
+/* Custom Cursor */
+.custom-cursor {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-full);
+    pointer-events: none;
+    z-index: 9999;
+    transition: all 0.1s ease;
+    mix-blend-mode: difference;
+    animation: cursorFlicker 3s ease-in-out infinite;
+}
+
+.cursor-glow {
+    position: fixed;
+    width: 24px;
+    height: 24px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.2s ease;
+    animation: cursorGlowPulse 4s ease-in-out infinite;
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+}
+
+/* Main Profile Card */
+.profile-main {
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            rgba(2, 2, 2, 0.98) 0px,
+            rgba(2, 2, 2, 0.98) 1px,
+            rgba(4, 4, 4, 0.99) 1px,
+            rgba(4, 4, 4, 0.99) 2px
+        ),
+        radial-gradient(circle at center, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.99) 100%),
+        var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(40, 40, 30, 0.3);
+    border-radius: 0;
+    padding: var(--space-xxl);
+    text-align: center;
+    box-shadow: 
+        8px 8px 0px rgba(0, 0, 0, 0.9),
+        0 0 40px rgba(0, 0, 0, 0.8),
+        inset 0 0 60px rgba(0, 0, 0, 0.9),
+        inset 2px 2px 0px rgba(255, 255, 240, 0.02);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    z-index: 10;
+    animation: cardBreathing 6s ease-in-out infinite, nostalgicGlow 10s ease-in-out infinite;
+    image-rendering: pixelated;
+}
+
+.profile-main::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(circle, rgba(0, 0, 0, 0.3) 0%, transparent 30%),
+        conic-gradient(from 0deg, transparent 0%, rgba(0, 0, 0, 0.1) 50%, transparent 100%);
+    opacity: 0.5;
+    animation: voidRotate 30s linear infinite;
+    pointer-events: none;
+}
+
+.profile-main::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
+    opacity: 0.8;
+    pointer-events: none;
+    animation: shadowShift 25s ease-in-out infinite;
+}
+
+/* Profile Picture */
+.profile-picture-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: var(--space-lg);
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    background-image: url('https://media.discordapp.net/attachments/1422419490531967029/1422419521641123910/279a42161a6279f2a4bd253ddcc2cefd.png?ex=68df3de9&is=68ddec69&hm=d68c86051d2163d2d873d2b5280a016cfdbef5ed8d33431712c6fd7a945dba12&=&quality=lossless');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: var(--radius-full);
+    border: 3px solid var(--border-medium);
+    box-shadow: var(--shadow-medium);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.profile-picture:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-strong);
+    border-color: var(--border-strong);
+}
+
+/* Discord Status Indicator */
+.discord-status-indicator {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-full);
+    border: 3px solid var(--bg-card);
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.discord-status-indicator.status-online {
+    background: var(--status-online);
+    box-shadow: 0 0 12px var(--status-online);
+}
+
+
+.discord-status-indicator.status-idle {
+    background: var(--status-idle);
+    box-shadow: 0 0 12px var(--status-idle);
+}
+
+.discord-status-indicator.status-offline {
+    background: var(--status-offline);
+    box-shadow: 0 0 8px var(--status-offline);
+}
+
+/* Profile Info */
+.profile-info {
+    margin-bottom: var(--space-lg);
+}
+
+.name {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--crt-white);
+    margin-bottom: var(--space-md);
+    letter-spacing: 3px;
+    text-shadow: 
+        2px 2px 0px rgba(0, 0, 0, 0.9),
+        0 0 10px var(--text-glow),
+        0 0 20px rgba(255, 255, 240, 0.2),
+        0 0 40px rgba(255, 255, 240, 0.1);
+    position: relative;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    animation: nostalgicTextGlow 4s ease-in-out infinite, textGlitch 8s ease-in-out infinite;
+    image-rendering: pixelated;
+}
+
+.name::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--text-primary), transparent);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.name-link {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.name-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: var(--radius-sm);
+}
+
+.name-link:hover::before {
+    opacity: 1;
+}
+
+.name-link:hover {
+    transform: scale(1.02);
+    text-shadow: 
+        0 0 30px rgba(255, 255, 255, 0.6),
+        0 0 60px rgba(255, 255, 255, 0.3);
+}
+
+.name:hover::after {
+    width: 80px;
+    opacity: 0.8;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+/* Tags */
+.tags {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.tag::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--glow-soft), transparent);
+    transition: left 0.3s ease;
+}
+
+.tag:hover::before {
+    left: 100%;
+}
+
+.tag:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-medium);
+    box-shadow: var(--shadow-soft);
+}
+
+.tag.pronouns {
+    background: linear-gradient(135deg, var(--bg-tertiary), rgba(255, 255, 255, 0.02));
+    border-color: var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+.tag.role {
+    background: linear-gradient(135deg, var(--bg-tertiary), rgba(30, 40, 60, 0.05));
+    border-color: rgba(30, 40, 60, 0.15);
+    color: rgba(80, 100, 140, 0.8);
+}
+
+.tag.sexuality {
+    background: linear-gradient(135deg, var(--bg-tertiary), rgba(60, 20, 60, 0.08));
+    border-color: rgba(60, 30, 60, 0.2);
+    color: rgba(120, 80, 120, 0.7);
+    animation: bisexualGlow 3s ease-in-out infinite alternate;
+}
+
+.tag.status {
+    background: linear-gradient(135deg, var(--bg-tertiary), rgba(255, 68, 68, 0.1));
+    border-color: rgba(255, 68, 68, 0.3);
+    color: var(--accent-red);
+    animation: statusGlow 2s ease-in-out infinite alternate;
+}
+
+/* Life Quote */
+.life-quote {
+    margin: var(--space-lg) 0;
+    padding: var(--space-lg) var(--space-xl);
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            rgba(2, 2, 2, 0.98) 0px,
+            rgba(2, 2, 2, 0.98) 1px,
+            rgba(1, 1, 1, 0.99) 1px,
+            rgba(1, 1, 1, 0.99) 2px
+        ),
+        rgba(1, 1, 1, 0.98);
+    border: 2px solid rgba(40, 40, 30, 0.4);
+    border-left: 4px solid rgba(100, 80, 60, 0.6);
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    line-height: 1.8;
+    position: relative;
+    text-align: left;
+    box-shadow: 
+        4px 4px 0px rgba(0, 0, 0, 0.9),
+        inset 0 0 20px rgba(0, 0, 0, 0.9),
+        inset 2px 2px 0px rgba(255, 255, 240, 0.02);
+    backdrop-filter: blur(2px);
+    animation: quoteTerminalGlow 6s ease-in-out infinite;
+    image-rendering: pixelated;
+}
+
+.life-quote::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(45deg, transparent 0%, rgba(0, 0, 0, 0.1) 50%, transparent 100%);
+    opacity: 0.3;
+    animation: quoteShadow 12s ease-in-out infinite;
+}
+
+.quote-text {
+    position: relative;
+    z-index: 2;
+    animation: terminalTypewriter 2s ease-out;
+    font-style: normal;
+    opacity: 0.8;
+    color: rgba(200, 200, 180, 0.7);
+    text-shadow: 
+        1px 1px 0px rgba(0, 0, 0, 0.9),
+        0 0 5px rgba(255, 255, 240, 0.1);
+    font-weight: 400;
+}
+
+.quote-text::after {
+    content: '_';
+    animation: terminalCursor 1s infinite;
+    color: rgba(255, 255, 240, 0.6);
+}
+
+/* Floating Particles */
+.floating-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+    overflow: hidden;
+}
+
+.dark-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 4;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 50%;
+    animation: floatUp 15s linear infinite;
+    opacity: 0;
+}
+
+.dark-particle {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    animation: darkFloat 20s linear infinite;
+    opacity: 0;
+}
+
+.spooky-orb {
+    position: absolute;
+    background: radial-gradient(circle, rgba(100, 0, 100, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: spookyDrift 25s ease-in-out infinite;
+    opacity: 0;
+}
+
+
+/* Animations */
+@keyframes dndPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(0.95);
+    }
+}
+
+@keyframes statusGlow {
+    0% {
+        box-shadow: var(--shadow-soft);
+    }
+    100% {
+        box-shadow: var(--shadow-soft), 0 0 20px rgba(255, 68, 68, 0.3);
+    }
+}
+
+@keyframes timerPulse {
+    0% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.05);
+        text-shadow: 0 0 12px var(--accent-red);
+    }
+}
+
+@keyframes typewriter {
+    0% {
+    opacity: 0;
+        transform: translateX(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes voidPulse {
+    0%, 100% {
+    opacity: 0.3;
+}
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@keyframes staticNoise {
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+    10% {
+        transform: translateX(-1px) translateY(1px);
+    }
+    20% {
+        transform: translateX(1px) translateY(-1px);
+    }
+    30% {
+        transform: translateX(-1px) translateY(-1px);
+    }
+    40% {
+        transform: translateX(1px) translateY(1px);
+    }
+    50% {
+        transform: translateX(0) translateY(-1px);
+    }
+    60% {
+        transform: translateX(-1px) translateY(0);
+    }
+    70% {
+        transform: translateX(1px) translateY(0);
+    }
+    80% {
+        transform: translateX(0) translateY(1px);
+    }
+    90% {
+        transform: translateX(-1px) translateY(-1px);
+    }
+    100% {
+        transform: translateX(0) translateY(0);
+    }
+}
+
+@keyframes shadowDance {
+    0%, 100% {
+        opacity: 0.2;
+        transform: rotate(0deg);
+    }
+    25% {
+        opacity: 0.4;
+        transform: rotate(1deg);
+    }
+    50% {
+        opacity: 0.3;
+        transform: rotate(-1deg);
+    }
+    75% {
+        opacity: 0.5;
+        transform: rotate(0.5deg);
+    }
+}
+
+@keyframes voidRotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes shadowShift {
+    0%, 100% {
+        opacity: 0.8;
+        transform: translateX(0) translateY(0);
+    }
+    25% {
+        opacity: 0.6;
+        transform: translateX(2px) translateY(-2px);
+    }
+    50% {
+        opacity: 0.9;
+        transform: translateX(-1px) translateY(1px);
+    }
+    75% {
+        opacity: 0.7;
+        transform: translateX(1px) translateY(2px);
+    }
+}
+
+@keyframes cursorFlicker {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes cursorGlowPulse {
+    0%, 100% {
+        opacity: 0.1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(1.2);
+    }
+}
+
+@keyframes quoteBreathing {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateY(-2px);
+        opacity: 0.6;
+    }
+}
+
+@keyframes quoteShadow {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.1;
+    }
+}
+
+@keyframes fadeInSlow {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 0.8;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: var(--space-md);
+    }
+    
+    .profile-main {
+        padding: var(--space-lg);
+    }
+    
+    .profile-picture {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .name {
+        font-size: 1.6rem;
+    }
+    
+    .tags {
+        gap: var(--space-xs);
+    }
+    
+    .tag {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 0.65rem;
+    }
+    
+    .war-quote {
+        flex-direction: column;
+        gap: var(--space-sm);
+        text-align: center;
+    }
+    
+    .quote-timer {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        max-width: 100%;
+    }
+    
+    .profile-main {
+        padding: var(--space-md);
+    }
+    
+    .profile-picture {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .discord-status-indicator {
+        width: 20px;
+        height: 20px;
+        bottom: 4px;
+        right: 4px;
+    }
+}
