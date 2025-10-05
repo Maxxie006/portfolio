@@ -1,4 +1,4 @@
-/* Enhanced Dark Cyberpunk Portfolio - Improved Readability */
+
 * {
     margin: 0;
     padding: 0;
@@ -19,6 +19,8 @@
     --text-muted: rgba(160, 160, 160, 0.6);
     --text-accent: rgba(220, 220, 220, 0.9);
     --text-glow: rgba(255, 255, 255, 0.4);
+    --text-glitch-red: rgba(255, 50, 50, 0.8);
+    --text-glitch-cyan: rgba(50, 255, 255, 0.8);
     
     /* Enhanced CRT Colors */
     --crt-green: rgba(0, 255, 0, 0.9);
@@ -51,6 +53,7 @@
     --border-subtle: rgba(255, 255, 255, 0.1);
     --border-medium: rgba(255, 255, 255, 0.2);
     --border-strong: rgba(255, 255, 255, 0.3);
+    --border-flicker: rgba(100, 150, 255, 0.8);
     
     /* Typography - Keep Original but Improve */
     --font-primary: 'Orbitron', sans-serif;
@@ -92,7 +95,8 @@ body {
     overflow: hidden;
     cursor: none;
     position: relative;
-    /* Removed heavy animation for better performance */
+    /* Added subtle breathing animation */
+    animation: bodyBreathing 30s ease-in-out infinite;
 }
 
 /* Remove scrollbars */
@@ -107,7 +111,7 @@ html {
     scrollbar-width: none;
 }
 
-/* Optimized CRT Scan Lines */
+/* Optimized CRT Scan Lines (Layer 1 - Deep Background) */
 body::before {
     content: '';
     position: fixed;
@@ -124,11 +128,12 @@ body::before {
         );
     pointer-events: none;
     z-index: 1;
-    animation: crtScanlines 0.2s linear infinite;
-    will-change: transform;
+    animation: crtScanlines 0.2s linear infinite, crtColorShift 15s ease-in-out infinite alternate;
+    will-change: transform, filter;
+    filter: hue-rotate(0deg);
 }
 
-/* Optimized Film Grain & Vignette */
+/* Optimized Film Grain & Vignette (Layer 2 - Foreground Distortion) */
 body::after {
     content: '';
     position: fixed;
@@ -140,8 +145,48 @@ body::after {
         radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
     pointer-events: none;
     z-index: 2;
-    /* Removed heavy animations for better performance */
 }
+
+/* NEW: Layer 3 - Subtle Grid Stream */
+.subtle-grid-stream {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%; /* Larger than viewport to prevent repeating issues */
+    height: 200%;
+    background: 
+        linear-gradient(90deg, transparent 99%, rgba(100, 150, 255, 0.05) 100%),
+        linear-gradient(0deg, transparent 99%, rgba(100, 150, 255, 0.05) 100%);
+    background-size: 50px 50px;
+    background-position: 0 0;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.1;
+    animation: gridStream 120s linear infinite;
+    will-change: transform;
+}
+
+/* NEW: Layer 4 - Static Glitch Overlay (Deep Void Effect) */
+.static-glitch-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 4;
+    mix-blend-mode: overlay;
+    background: transparent;
+    box-shadow: 
+        0 0 100px 50px rgba(0, 255, 255, 0.05) inset,
+        0 0 200px 100px rgba(255, 0, 255, 0.05) inset,
+        0 0 300px 150px rgba(255, 255, 0, 0.05) inset,
+        -500px -500px 300px 150px rgba(100, 150, 255, 0.03),
+        500px 500px 300px 150px rgba(255, 100, 100, 0.03);
+    animation: staticDrift 50s ease-in-out infinite alternate;
+    will-change: box-shadow, transform;
+}
+
 
 /* Optimized Custom Cursor */
 .custom-cursor {
@@ -155,7 +200,6 @@ body::after {
     transition: all var(--transition-fast);
     mix-blend-mode: difference;
     will-change: transform;
-    /* Removed flicker animation for better performance */
 }
 
 .cursor-glow {
@@ -167,7 +211,6 @@ body::after {
     z-index: 9998;
     transition: all var(--transition-normal);
     will-change: transform;
-    /* Removed pulse animation for better performance */
 }
 
 /* Container */
@@ -177,7 +220,7 @@ body::after {
     position: relative;
 }
 
-/* Enhanced Main Profile Card */
+/* Enhanced Main Profile Card (Added flicker-border on hover) */
 .profile-main {
     background: 
         repeating-linear-gradient(
@@ -203,13 +246,17 @@ body::after {
     overflow: hidden;
     transition: all var(--transition-normal);
     z-index: 10;
-    will-change: transform, box-shadow;
-    /* Removed heavy animations for better performance */
+    will-change: transform, box-shadow, border-color;
     image-rendering: pixelated;
 }
 
-/* Depressing Shooting Stars */
+.profile-main:hover {
+    animation: flicker-border 1s steps(10, end) infinite;
+}
+
+/* Depressing Shooting Stars (within card) */
 .profile-main::before {
+    /* Kept existing styles for continuity, though these are more like distant, deep-card glints now */
     content: '';
     position: absolute;
     top: 20%;
@@ -239,59 +286,14 @@ body::after {
     z-index: 1;
 }
 
-/* Additional depressing shooting stars using pseudo-elements on child elements */
-.profile-picture::before {
-    content: '';
-    position: absolute;
-    top: 60%;
-    left: 15px;
-    width: 1px;
-    height: 1px;
-    background: rgba(100, 100, 100, 0.25);
-    border-radius: 50%;
-    box-shadow: 0 0 1.5px rgba(80, 80, 80, 0.15);
-    animation: depressingStar3 30s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.name::before {
-    content: '';
-    position: absolute;
-    top: 80%;
-    left: 25px;
-    width: 0.5px;
-    height: 0.5px;
-    background: rgba(70, 70, 70, 0.15);
-    border-radius: 50%;
-    box-shadow: 0 0 1px rgba(50, 50, 50, 0.1);
-    animation: depressingStar4 40s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.quote-text::before {
-    content: '';
-    position: absolute;
-    top: 30%;
-    left: 30px;
-    width: 1px;
-    height: 1px;
-    background: rgba(90, 90, 90, 0.2);
-    border-radius: 50%;
-    box-shadow: 0 0 1px rgba(70, 70, 70, 0.1);
-    animation: depressingStar5 20s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* Removed duplicate selectors - now using individual shooting stars */
 
 /* Enhanced Profile Picture */
 .profile-picture-container {
     position: relative;
     display: inline-block;
     margin-bottom: var(--space-lg);
+    /* Added subtle breathing to the container */
+    animation: cardBreathing 20s ease-in-out infinite alternate; 
 }
 
 .profile-picture {
@@ -306,8 +308,8 @@ body::after {
     box-shadow: var(--shadow-medium);
     transition: all var(--transition-normal);
     position: relative;
-    will-change: transform;
-    transform: translateZ(0); /* Force hardware acceleration */
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
 }
 
 .profile-picture:hover {
@@ -327,6 +329,8 @@ body::after {
     border: 3px solid var(--bg-card);
     z-index: 10;
     transition: all var(--transition-fast);
+    /* Added subtle status pulse */
+    animation: statusPulse 4s ease-in-out infinite alternate; 
 }
 
 .discord-status-indicator.status-online {
@@ -354,7 +358,7 @@ body::after {
     margin-bottom: var(--space-lg);
 }
 
-/* Enhanced Name */
+/* Enhanced Name (Added Glitch Effect Class) */
 .name {
     font-size: clamp(1.8rem, 4vw, 2.4rem);
     font-weight: 700;
@@ -370,10 +374,44 @@ body::after {
     font-family: var(--font-mono);
     text-transform: uppercase;
     will-change: text-shadow;
-    /* Removed heavy text animations for better performance */
     image-rendering: pixelated;
     text-align: center;
     transform: translateX(8px);
+}
+
+/* New Glitch Text Effect */
+.glitch-text {
+    display: block;
+    position: relative;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-shadow: 
+        2px 2px 0px rgba(0, 0, 0, 0.9),
+        0 0 5px var(--text-glow);
+}
+
+/* Red Channel Glitch */
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--text-glitch-red);
+    clip-path: inset(50% 0 30% 0);
+    animation: glitch-anim-1 2s linear infinite alternate-reverse;
+}
+
+/* Cyan Channel Glitch */
+.glitch-text::after {
+    left: -2px;
+    text-shadow: 2px 0 var(--text-glitch-cyan);
+    clip-path: inset(20% 0 60% 0);
+    animation: glitch-anim-2 3s linear infinite alternate-reverse;
 }
 
 .name::after {
@@ -424,7 +462,7 @@ body::after {
 .name:hover::after {
     width: 80px;
     opacity: 0.8;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
 }
 
 /* Pronouns Superscript */
@@ -478,7 +516,7 @@ body::after {
     position: relative;
     overflow: hidden;
     will-change: transform, box-shadow;
-    transform: translateZ(0); /* Force hardware acceleration */
+    transform: translateZ(0);
 }
 
 .tag::before {
@@ -550,8 +588,9 @@ body::after {
         inset 0 0 20px rgba(0, 0, 0, 0.9),
         inset 2px 2px 0px rgba(255, 255, 240, 0.05);
     backdrop-filter: blur(2px);
-    animation: quoteTerminalGlow 6s ease-in-out infinite;
+    animation: quoteTerminalGlow 6s ease-in-out infinite, quoteGlitch 15s linear infinite;
     image-rendering: pixelated;
+    will-change: transform, box-shadow;
 }
 
 .life-quote::before {
@@ -588,7 +627,7 @@ body::after {
     color: var(--text-muted);
 }
 
-/* Optimized Floating Particles */
+/* Optimized Floating Particles - Now the container for all particle effects */
 .floating-particles {
     position: fixed;
     top: 0;
@@ -596,7 +635,7 @@ body::after {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 3;
+    z-index: 5; 
     overflow: hidden;
     will-change: transform;
 }
@@ -620,7 +659,7 @@ body::after {
     animation: floatUp 20s linear infinite;
     opacity: 0;
     will-change: transform, opacity;
-    transform: translateZ(0); /* Force hardware acceleration */
+    transform: translateZ(0);
 }
 
 .dark-particle {
@@ -630,7 +669,7 @@ body::after {
     animation: darkFloat 25s linear infinite;
     opacity: 0;
     will-change: transform, opacity;
-    transform: translateZ(0); /* Force hardware acceleration */
+    transform: translateZ(0);
 }
 
 .spooky-orb {
@@ -640,8 +679,32 @@ body::after {
     animation: spookyDrift 30s ease-in-out infinite;
     opacity: 0;
     will-change: transform, opacity;
-    transform: translateZ(0); /* Force hardware acceleration */
+    transform: translateZ(0);
 }
+
+.void-particle {
+    position: absolute;
+    background: radial-gradient(circle, rgba(100, 150, 255, 0.05) 0%, transparent 50%);
+    border-radius: 50%;
+    animation: voidDrift 40s linear infinite;
+    opacity: 0;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+/* NEW: Void Flare Particle - Very large, very slow, very subtle */
+.void-flare {
+    position: absolute;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 80%);
+    border-radius: var(--radius-full);
+    width: 150px; /* Large size */
+    height: 150px;
+    animation: voidFlareDrift 60s ease-in-out infinite alternate;
+    opacity: 0;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
 
 /* Optimized Animations - Performance Focused */
 @keyframes bodyBreathing {
@@ -653,66 +716,71 @@ body::after {
     }
 }
 
+/* New: Subtle Grid Stream Animation */
+@keyframes gridStream {
+    0% {
+        background-position: 0 0;
+        transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    100% {
+        background-position: 50px 50px; /* Scrolls the pattern */
+        transform: translateX(-50vw) translateY(50vh) rotate(5deg);
+    }
+}
+
+/* New: Static Glitch Drift Animation */
+@keyframes staticDrift {
+    0% {
+        transform: scale(1);
+        box-shadow: 
+            0 0 100px 50px rgba(0, 255, 255, 0.05) inset,
+            0 0 200px 100px rgba(255, 0, 255, 0.05) inset,
+            0 0 300px 150px rgba(255, 255, 0, 0.05) inset;
+    }
+    50% {
+        transform: scale(1.05) rotate(0.1deg);
+        box-shadow: 
+            0 0 100px 50px rgba(0, 255, 255, 0.03) inset,
+            0 0 200px 100px rgba(255, 0, 255, 0.07) inset,
+            0 0 300px 150px rgba(255, 255, 0, 0.03) inset;
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 
+            0 0 100px 50px rgba(0, 255, 255, 0.05) inset,
+            0 0 200px 100px rgba(255, 0, 255, 0.05) inset,
+            0 0 300px 150px rgba(255, 255, 0, 0.05) inset;
+    }
+}
+
+/* New: Void Flare Drift */
+@keyframes voidFlareDrift {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.05;
+    }
+    50% {
+        transform: translate(25vw, 15vh) scale(0.9);
+        opacity: 0.02;
+    }
+    100% {
+        transform: translate(50vw, 30vh) scale(1.1);
+        opacity: 0.05;
+    }
+}
+
+@keyframes crtColorShift {
+    0% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(5deg); }
+    100% { filter: hue-rotate(-5deg); }
+}
+
 @keyframes crtScanlines {
     0% {
         transform: translateY(0);
     }
     100% {
         transform: translateY(4px);
-    }
-}
-
-@keyframes voidPulse {
-    0%, 100% {
-        opacity: 0.3;
-    }
-    50% {
-        opacity: 0.6;
-    }
-}
-
-@keyframes filmGrain {
-    0% {
-        transform: translateX(0) translateY(0);
-    }
-    10% {
-        transform: translateX(-1px) translateY(1px);
-    }
-    20% {
-        transform: translateX(1px) translateY(-1px);
-    }
-    30% {
-        transform: translateX(-1px) translateY(-1px);
-    }
-    40% {
-        transform: translateX(1px) translateY(1px);
-    }
-    50% {
-        transform: translateX(0) translateY(-1px);
-    }
-    60% {
-        transform: translateX(-1px) translateY(0);
-    }
-    70% {
-        transform: translateX(1px) translateY(0);
-    }
-    80% {
-        transform: translateX(0) translateY(1px);
-    }
-    90% {
-        transform: translateX(-1px) translateY(-1px);
-    }
-    100% {
-        transform: translateX(0) translateY(0);
-    }
-}
-
-@keyframes vignetteBreathing {
-    0%, 100% {
-        opacity: 0.8;
-    }
-    50% {
-        opacity: 0.9;
     }
 }
 
@@ -725,104 +793,66 @@ body::after {
     }
 }
 
-@keyframes nostalgicGlow {
-    0%, 100% {
-        box-shadow: 
-            8px 8px 0px rgba(0, 0, 0, 0.9),
-            0 0 40px rgba(0, 0, 0, 0.8),
-            inset 0 0 60px rgba(0, 0, 0, 0.9),
-            inset 2px 2px 0px rgba(255, 255, 240, 0.05);
-    }
-    50% {
-        box-shadow: 
-            8px 8px 0px rgba(0, 0, 0, 0.9),
-            0 0 50px rgba(0, 0, 0, 0.8),
-            0 0 20px rgba(100, 150, 255, 0.1),
-            inset 0 0 60px rgba(0, 0, 0, 0.9),
-            inset 2px 2px 0px rgba(255, 255, 240, 0.05);
-    }
+@keyframes flicker-border {
+    0% { border-color: rgba(100, 100, 100, 0.3); }
+    5% { border-color: var(--border-flicker); }
+    10% { border-color: rgba(100, 100, 100, 0.3); }
+    15% { border-color: var(--border-flicker); }
+    20% { border-color: rgba(100, 100, 100, 0.3); }
+    100% { border-color: rgba(100, 100, 100, 0.3); }
 }
 
-@keyframes voidRotate {
+@keyframes glitch-anim-1 {
     0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes shadowShift {
-    0%, 100% {
-        opacity: 0.8;
-        transform: translateX(0) translateY(0);
-    }
-    25% {
-        opacity: 0.6;
-        transform: translateX(2px) translateY(-2px);
-    }
-    50% {
-        opacity: 0.9;
-        transform: translateX(-1px) translateY(1px);
-    }
-    75% {
-        opacity: 0.7;
-        transform: translateX(1px) translateY(2px);
-    }
-}
-
-@keyframes cursorFlicker {
-    0%, 100% {
-        opacity: 0.4;
-    }
-    50% {
-        opacity: 0.8;
-    }
-}
-
-@keyframes cursorGlowPulse {
-    0%, 100% {
-        opacity: 0.1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.3;
-        transform: scale(1.2);
-    }
-}
-
-@keyframes nostalgicTextGlow {
-    0%, 100% {
-        text-shadow: 
-            2px 2px 0px rgba(0, 0, 0, 0.9),
-            0 0 10px var(--text-glow),
-            0 0 20px rgba(255, 255, 240, 0.3),
-            0 0 40px rgba(255, 255, 240, 0.1);
-    }
-    50% {
-        text-shadow: 
-            2px 2px 0px rgba(0, 0, 0, 0.9),
-            0 0 15px var(--text-glow),
-            0 0 30px rgba(255, 255, 240, 0.5),
-            0 0 60px rgba(255, 255, 240, 0.2);
-    }
-}
-
-@keyframes textGlitch {
-    0%, 100% {
-        transform: translateX(0);
+        clip-path: inset(45% 0 45% 0);
+        transform: translateX(-5px);
     }
     20% {
-        transform: translateX(-1px);
+        clip-path: inset(80% 0 10% 0);
+        transform: translateX(5px);
     }
     40% {
-        transform: translateX(1px);
+        clip-path: inset(20% 0 70% 0);
+        transform: translateX(-5px);
     }
     60% {
-        transform: translateX(-1px);
+        clip-path: inset(40% 0 30% 0);
+        transform: translateX(3px);
     }
     80% {
-        transform: translateX(1px);
+        clip-path: inset(30% 0 50% 0);
+        transform: translateX(-3px);
+    }
+    100% {
+        clip-path: inset(55% 0 35% 0);
+        transform: translateX(0);
+    }
+}
+
+@keyframes glitch-anim-2 {
+    0% {
+        clip-path: inset(40% 0 30% 0);
+        transform: translateX(5px);
+    }
+    20% {
+        clip-path: inset(10% 0 80% 0);
+        transform: translateX(-5px);
+    }
+    40% {
+        clip-path: inset(70% 0 20% 0);
+        transform: translateX(5px);
+    }
+    60% {
+        clip-path: inset(30% 0 40% 0);
+        transform: translateX(-3px);
+    }
+    80% {
+        clip-path: inset(50% 0 30% 0);
+        transform: translateX(3px);
+    }
+    100% {
+        clip-path: inset(35% 0 55% 0);
+        transform: translateX(0);
     }
 }
 
@@ -853,41 +883,33 @@ body::after {
     }
 }
 
+@keyframes quoteGlitch {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    1% {
+        transform: translate(-1px, 1px);
+    }
+    3% {
+        transform: translate(2px, -1px);
+    }
+    5% {
+        transform: translate(1px, 1px);
+    }
+    7% {
+        transform: translate(-2px, -2px);
+    }
+    9% {
+        transform: translate(3px, 0);
+    }
+}
+
 @keyframes quoteShadow {
     0%, 100% {
         opacity: 0.3;
     }
     50% {
         opacity: 0.1;
-    }
-}
-
-@keyframes terminalTypewriter {
-    0% {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-    100% {
-        opacity: 0.9;
-        transform: translateX(0);
-    }
-}
-
-@keyframes typewriterEffect {
-    from {
-        width: 0;
-    }
-    to {
-        width: 100%;
-    }
-}
-
-@keyframes blinkCursor {
-    0%, 50% {
-        opacity: 1;
-    }
-    51%, 100% {
-        opacity: 0;
     }
 }
 
@@ -1027,7 +1049,7 @@ body::after {
 
 @keyframes floatUp {
     0% {
-        transform: translateY(100vh);
+        transform: translateY(100vh) scale(0.8);
         opacity: 0;
     }
     10% {
@@ -1037,14 +1059,14 @@ body::after {
         opacity: 1;
     }
     100% {
-        transform: translateY(-100px);
+        transform: translateY(-100px) scale(1.2);
         opacity: 0;
     }
 }
 
 @keyframes darkFloat {
     0% {
-        transform: translateY(100vh) translateX(0);
+        transform: translateY(100vh) translateX(0) rotate(0deg);
         opacity: 0;
     }
     10% {
@@ -1054,7 +1076,7 @@ body::after {
         opacity: 0.3;
     }
     100% {
-        transform: translateY(-100px) translateX(50px);
+        transform: translateY(-100px) translateX(50px) rotate(180deg);
         opacity: 0;
     }
 }
@@ -1080,6 +1102,41 @@ body::after {
     }
 }
 
+@keyframes voidDrift {
+    0% {
+        transform: translate(-50vw, 50vh) scale(1);
+        opacity: 0;
+    }
+    25% {
+        transform: translate(0, 0) scale(1.1);
+        opacity: 0.05;
+    }
+    50% {
+        transform: translate(50vw, -50vh) scale(0.9);
+        opacity: 0.0;
+    }
+    75% {
+        transform: translate(0, -10vh) scale(1.2);
+        opacity: 0.1;
+    }
+    100% {
+        transform: translate(-50vw, 50vh) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes statusPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0px currentColor;
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+    }
+}
+
+
 /* Enhanced Discord Status Styles */
 .discord-user {
     margin-top: var(--space-md);
@@ -1088,6 +1145,12 @@ body::after {
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     font-family: var(--font-mono);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 5px rgba(255, 255, 255, 0.05) inset;
+    transition: box-shadow var(--transition-normal);
+}
+
+.discord-user:hover {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 10px var(--accent-blue);
 }
 
 .discord-user-info {
@@ -1133,6 +1196,13 @@ body::after {
     background: var(--bg-secondary);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.enhanced-activity:hover {
+    background: rgba(100, 150, 255, 0.05);
+    border-color: rgba(100, 150, 255, 0.3);
+    transform: translateX(4px);
 }
 
 .activity-icon {
@@ -1203,12 +1273,12 @@ body::after {
 }
 
 .error {
-    color: var(--accent-error);
+    color: var(--accent-red);
     text-align: center;
     font-size: 0.6rem;
     padding: var(--space-sm);
     background: rgba(244, 67, 54, 0.1);
-    border: 1px solid var(--accent-error);
+    border: 1px solid var(--accent-red);
     border-radius: var(--radius-sm);
 }
 
